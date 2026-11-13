@@ -1,0 +1,68 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+
+  mutation:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Fails the job if the mutation score drops below the break threshold in stryker.config.json.
+      - run: npm run mutation
+      - name: Score in the run summary
+        if: always()
+        run: |
+          node -e '
+            const r = require("./reports/mutation/mutation.json");
+            let killed = 0, timeout = 0, survived = 0, nocov = 0;
+            for (const f of Object.values(r.files)) for (const m of f.mutants) {
+              if (m.status === "Killed") killed++;
+              else if (m.status === "Timeout") timeout++;
+              else if (m.status === "Survived") survived++;
+              else if (m.status === "NoCoverage") nocov++;
+            }
+            const total = killed + timeout + survived + nocov;
+            const score = ((killed + timeout) / total * 100).toFixed(2);
+            console.log(`### Mutation score: ${score}%\n\n${killed + timeout} of ${total} mutants killed, ${survived} survived, ${nocov} not covered.`);
+          ' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: reports/mutation
+
+  pages:
+    if: github.ref == 'refs/heads/main'
+    needs: mutation
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

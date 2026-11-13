@@ -1,0 +1,32 @@
+{
+  "name": "tariff-dead-zone",
+  "version": "0.1.0",
+  "description": "Prices parcels on a per-kilo tariff with minimums and flat fees, and finds the weights where sending less costs more.",
+  "license": "MIT",
+  "author": "Chadi Choukkah",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage",
+    "mutation": "stryker run"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@stryker-mutator/core": "^10.1.1",
+    "@stryker-mutator/vitest-runner": "^10.1.1",
+    "@vitest/coverage-v8": "^5.1.0",
+    "fast-check": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^5.1.0"
+  }
+}
