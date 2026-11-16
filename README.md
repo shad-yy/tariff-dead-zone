@@ -55,7 +55,7 @@ Money is integer cents throughout. Weights are integer grams.
 - **Property tests** (`test/properties.test.ts`, fast-check): for randomly generated cards and weights, the price is always whole cents and never negative, more weight above the minimum never costs less, and the dead-zone advice is always true. Adding the suggested weight gives exactly the promised price.
 - **Mutation testing** (Stryker): Stryker changes the code on purpose, turning a `>` into `>=`, a `+` into `-`, or a condition into `true`, and reruns the tests. If no test fails, that mutant "survived", which means a real bug in that spot would go unnoticed. CI fails if the score drops below 90%.
 
-The current score and the full report are in the latest CI run and on the report page. They are published by CI, not typed here by hand.
+First CI run (16 Nov 2026): **98.84%**, 171 of 173 mutants killed ([run log](https://github.com/shad-yy/tariff-dead-zone/actions/runs/43982494234)). Every later run prints its score in the run summary and attaches the HTML report as `mutation-report`.
 
 Two mutants are known to survive, and they can't be killed. Both replace an empty list `[]` with `["Stryker was here"]` (`src/pricing.ts`, the default tag list and the tag list in `inDeadZone`). A list of tags can only change the result if one of the tags is in the carrier's bulky list. In both places the bulky list is empty or comes from the caller, so the mutant behaves exactly like the original.
 
