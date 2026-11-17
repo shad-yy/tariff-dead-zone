@@ -4,7 +4,7 @@ Prices parcels on a per-kilo tariff with a minimum weight and a flat fee below i
 
 ## The problem
 
-Plenty of carriers publish a card like this one (the numbers are made up):
+Minimum-weight tariffs are standard in freight and parcel pricing, and they all create the same cliff. In US less-than-truckload freight it is common enough to have a name for the fix: [deficit weight rating](https://www.ibm.com/support/pages/about-ltl-deficit-rating), billing a shipment as if it weighed the next weight break when that comes out cheaper. A card like this one (illustrative numbers) shows the effect:
 
 | | Price |
 |---|---|
@@ -18,7 +18,7 @@ The code doesn't change the card. The rates belong to the carrier, and customers
 
 ## Use
 
-It isn't on npm. Clone the repo and import from `src/`:
+Clone the repo and import from `src/`:
 
 ```ts
 import { kg, parseGrid, quote, deadZones } from './src/index.js';
@@ -57,7 +57,7 @@ Money is integer cents throughout. Weights are integer grams.
 
 First CI run (16 Nov 2026): **98.84%**, 171 of 173 mutants killed ([run log](https://github.com/shad-yy/tariff-dead-zone/actions/runs/43982494234)). Every later run prints its score in the run summary and attaches the HTML report as `mutation-report`.
 
-Two mutants are known to survive, and they can't be killed. Both replace an empty list `[]` with `["Stryker was here"]` (`src/pricing.ts`, the default tag list and the tag list in `inDeadZone`). A list of tags can only change the result if one of the tags is in the carrier's bulky list. In both places the bulky list is empty or comes from the caller, so the mutant behaves exactly like the original.
+The two survivors are equivalent mutants: no test can kill them, because they don't change behaviour. Both replace an empty list `[]` with `["Stryker was here"]` (`src/pricing.ts`, the default tag list and the tag list in `inDeadZone`). A list of tags can only change the result if one of the tags is in the carrier's bulky list. In both places the bulky list is empty or comes from the caller, so the mutant behaves exactly like the original.
 
 ## Run it
 
@@ -72,7 +72,7 @@ Node 22 or later.
 
 ## Where it comes from
 
-The pricing rules of Rihla, a freight and parcel app I'm building. The client's name and real tariff have been taken out, and the example card above is invented.
+The pricing rules of Rihla, an offline-first freight app for carriers moving baggage between France and Morocco. The client's name and real tariff have been taken out, and the example card above is illustrative. The rest of that system is in the [Rihla case study](https://github.com/shad-yy/rihla-case-study).
 
 ## Licence
 
